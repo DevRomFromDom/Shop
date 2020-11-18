@@ -1,0 +1,21 @@
+.submitForm {
+    display: flex;
+}
+.submitButton {
+    padding: 10px 10px;
+    display: flex;
+}
+.successMsg {
+    width: 200px;
+    border: 1px solid #d8d8d8;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: Arial;
+    font-size: 11px;
+    text-transform: uppercase;
+    background-color: rgb(236, 255, 216);
+    color: green;
+    text-align: center;
+    margin-left: 10px;
+    opacity: 0.6;
+}

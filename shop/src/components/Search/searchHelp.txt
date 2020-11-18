@@ -1,0 +1,148 @@
+import React, { useContext, useEffect, useState } from "react";
+import ProductItem from "./ProductItem/ProductItem";
+import "../Search/Search.scss";
+import { SearchValueContext } from "../../App";
+import { Checkbox } from "./checkbox/Checkbox";
+
+const Search = () => {
+    const [products, setProducts] = useState([]);
+    const [colors, setColors] = useState([]);
+    const [brands, setBrands] = useState([]);
+    const [years, setYears] = useState([]);
+    const [prices, setPrices] = useState([]);
+    const [search, setSearch] = useState(0);
+    const [loader, setLoader] = useState(true);
+    const searchValue = useContext(SearchValueContext);
+    useEffect(() => {
+        console.log(searchValue);
+        if (searchValue) {
+            try {
+                const n = async () => {
+                    await fetch("/api/search/name", {
+                        method: "POST",
+                        body: JSON.stringify(searchValue),
+                        headers: { "Content-Type": "application/json" },
+                    })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            setProducts(data);
+                            setSearch(1);
+                        });
+                };
+                n();
+            } catch (e) {
+                console.log(e);
+            }
+            setLoader(false);
+        }
+    }, [searchValue]);
+    useEffect(() => {
+        if (products.length === 0 && search === 0) {
+            try {
+                const all = async () => {
+                    await fetch("/api/search/all", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                    })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            const prod = data;
+                            setProducts(prod);
+                            const arrObjParameters = [];
+                            const takeParams = async () => {
+                                for (const [key, value] of Object.entries(
+                                    prod
+                                )) {
+                                    const param = Object.values(value);
+                                    const objParameters = param[0];
+                                    arrObjParameters.push(objParameters);
+
+                                    const arrObj = [];
+                                    for (
+                                        let i = 0;
+                                        i < arrObjParameters.length;
+                                        i++
+                                    ) {
+                                        arrObj.push(
+                                            Object.entries(arrObjParameters[i])
+                                        );
+                                    }
+                                    const color = [];
+                                    const price = [];
+                                    const brand = [];
+                                    const year = [];
+                                    for (let j = 0; j < arrObj.length; j++) {
+                                        const a = Object.entries(arrObj[j]);
+                                        for (let i = 0; i < a.length; i++) {
+                                            const x = a[i];
+                                            for (let y = 0; y < x.length; y++) {
+                                                // console.log(x[y]);
+                                                const z = x[y];
+                                                if (z[0] === "color") {
+                                                    color.push(z[1]);
+                                                }
+                                                if (z[0] === "brand") {
+                                                    brand.push(z[1]);
+                                                }
+                                                if (z[0] === "modelYear") {
+                                                    year.push(z[1]);
+                                                }
+                                                if (z[0] === "price") {
+                                                    price.push(z[1]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    setColors(color);
+                                    setBrands(brand);
+                                    setYears(year);
+                                    setPrices(price);
+                                }
+                            };
+                            takeParams();
+                        });
+                };
+                all();
+                setLoader(false);
+                // console.log(products[1]);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }, [products]);
+
+    if (loader) {
+        return <div>Loading...</div>;
+    } else
+        return (
+            <div className="search_view">
+                <div className="search_result">
+                    <div className="products">
+                        {products.length !== 0
+                            ? products.map((product, index) => {
+                                  return (
+                                      <div key={index}>
+                                          <ProductItem product={product} />
+                                      </div>
+                                  );
+                              })
+                            : null}
+                    </div>
+                </div>
+                <div className="search_params">
+                    {colors.length !== 0 &&
+                    colors.length === products.length ? (
+                        <div className="colors">
+                            <Checkbox colors={colors} />
+                        </div>
+                    ) : null}
+                    {brands.length !== 0 ? (
+                        <div className="brands"></div>
+                    ) : null}
+                    {years.length !== 0 ? <div className="year"></div> : null}
+                </div>
+            </div>
+        );
+};
+
+export default Search;

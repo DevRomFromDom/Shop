@@ -1,0 +1,22 @@
+.view {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.result {
+    width: 80%;
+}
+
+.params {
+    width: calc(20% - 20px);
+
+    ul {
+        margin: 0 0 0 10px;
+        padding: 0;
+    }
+    li {
+        list-style: none;
+        padding: 5px 0;
+    }
+}

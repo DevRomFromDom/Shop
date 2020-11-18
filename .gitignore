@@ -1,0 +1,3 @@
+# Specify filepatterns you want git to ignore.
+server/node_modules
+shop/node_modules
