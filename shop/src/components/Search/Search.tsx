@@ -27,7 +27,6 @@ const Search = () => {
         modelYear: [],
         price: [],
     });
-    const [search, setSearch] = useState(0);
     const searchValue = useContext(SearchValueContext);
 
     const toggleParamState = (
@@ -70,8 +69,6 @@ const Search = () => {
         all();
     }, []);
 
-    console.log(paramsState);
-
     if (products === null || paramsAndValues === null) {
         return <div>Loading...</div>;
     } else
@@ -79,15 +76,17 @@ const Search = () => {
             <div className={styles.view}>
                 <div className={styles.result}>
                     <div>
-                        {products.length !== 0
-                            ? products.map((product, index) => {
-                                  return (
-                                      <div key={index}>
-                                          <ProductItem product={product} />
-                                      </div>
-                                  );
-                              })
-                            : null}
+                        {products.length !== 0 ? (
+                            products.map((product, index) => {
+                                return (
+                                    <div key={index}>
+                                        <ProductItem product={product} />
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div>Товары не найдены</div>
+                        )}
                     </div>
                 </div>
                 <div className={styles.params}>
