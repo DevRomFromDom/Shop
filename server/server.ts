@@ -29,7 +29,6 @@ const server = http.createServer(app);
     app.use(express.static(path.resolve(__dirname, "../shop/public")));
 
     app.post("/api", async (req, res) => {
-        console.log(req.body);
         try {
             const newProduct = new Product({
                 _id: new mongoose.Types.ObjectId(),
@@ -56,7 +55,6 @@ const server = http.createServer(app);
                     reqObject[`parameters.${param}`] = values;
                 }
             });
-            console.log(reqObject);
             const data = await Product.find(reqObject).exec();
             res.json(data);
         } catch (err) {
