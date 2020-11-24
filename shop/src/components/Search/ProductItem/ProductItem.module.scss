@@ -1,45 +1,51 @@
-.card{
+.card {
     display: flex;
-    background-color: aqua;
-    border: 2px solid gray;
+    background-color: rgb(253, 255, 249);
+    border: 2px solid rgb(240, 232, 232);
     border-radius: 2px;
     padding: 2px;
     margin: 2px;
     width: 100%;
 }
-.main{
-    padding: 2px;
+.main {
+    padding: 0 5px;
     display: flex;
     flex-direction: column;
     width: 46%;
-
 }
-.parameters{
+.parameters {
     align-items: flex-start;
-    padding:2px;
+    padding: 2px;
     display: flex;
     flex-direction: column;
     font-size: 15px;
-    
 }
-.price{
+.price {
     display: flex;
     flex-direction: column;
     justify-content: center;
     height: 76px;
     width: 17.2%;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    
+    font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
 }
-.params_block{
+.params_block {
     display: flex;
     width: 36.8%;
     justify-content: flex-start;
-
 }
-// .name{}
-// .color{}
-// .brand{}
-// .modelYear{}
-// .condition{}
-// .description{}
+.name {
+    font-size: 17px;
+    font-weight: 600;
+    padding: 5px 0;
+}
+.paramValue {
+}
+.paramKey {
+    width: 85px;
+}
+.paramList {
+    display: flex;
+}
+.params_title {
+    width: 130px;
+}

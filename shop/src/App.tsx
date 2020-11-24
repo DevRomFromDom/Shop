@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Search from "./components/Search/Search";
 import AddProduct from "./components/AddProduct/AddProduct";
-import "./App.scss";
+import styles from "./App.module.scss";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Button, ThemeProvider, FLAT_THEME } from "@skbkontur/react-ui";
 
@@ -20,13 +20,16 @@ export default function App() {
         <Router>
             <SearchValueContext.Provider value={searchValue}>
                 <ThemeProvider value={FLAT_THEME}>
-                    <div className="App">
-                        <div className="head"></div>
-                        <div className="navbar">
-                            <div className="shop">Магазин</div>
-                            <form className="search_form" autoComplete="off">
+                    <div className={styles.App}>
+                        <div className={styles.head}></div>
+                        <div className={styles.navbar}>
+                            <div className={styles.shop}>Магазин</div>
+                            <form
+                                className={styles.search_form}
+                                autoComplete="off"
+                            >
                                 <input
-                                    className="input_search"
+                                    className={styles.input_search}
                                     placeholder="Искать товары"
                                     name="search"
                                     type="text"
@@ -38,14 +41,14 @@ export default function App() {
                                 />
                                 <Link to="/">
                                     <button
-                                        className="search_button"
+                                        className={styles.search_button}
                                         onClick={() => searchValueSend()}
                                     >
                                         Найти
                                     </button>
                                 </Link>
                             </form>
-                            <div className="addproduct">
+                            <div className={styles.addproduct}>
                                 <Link to="/addproduct">
                                     <Button use="success">
                                         Добавить товар
@@ -53,8 +56,8 @@ export default function App() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="view">
-                            <div className="body_view">
+                        <div className={styles.view}>
+                            <div className={styles.body_view}>
                                 <Switch>
                                     <Route path="/addproduct">
                                         <AddProduct />

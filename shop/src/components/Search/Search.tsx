@@ -110,7 +110,7 @@ const Search = () => {
                                                 );
                                             }}
                                         >
-                                            {val}
+                                            {val ? val : "Без цены"}
                                         </Checkbox>
                                     </li>
                                 ))}
