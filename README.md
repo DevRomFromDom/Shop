@@ -1,6 +1,5 @@
 # Shop
 
-https://github.com/DevRomFromDom/Shop
 Небольшой тестовый проект в виде онлайн магазина.
 
 ## Возможности:
