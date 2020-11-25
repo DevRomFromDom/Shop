@@ -70,7 +70,12 @@ const Search = () => {
     }, []);
 
     if (products === null || paramsAndValues === null) {
-        return <div>Loading...</div>;
+        return (
+            <div className={styles.bodyLoader}>
+                <div className={styles.water}></div>
+                <span className={styles.loading}>Loading...</span>
+            </div>
+        );
     } else
         return (
             <div className={styles.view}>
