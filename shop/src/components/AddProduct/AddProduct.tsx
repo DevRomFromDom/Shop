@@ -64,7 +64,7 @@ const AddProduct = () => {
                 }
             }, 5000);
         }
-    }, [addStatus, isMounted]);
+    }, [addStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const setParameter = (
         parameter: keyof Product["parameters"],
