@@ -5,15 +5,35 @@ import styles from "./App.module.scss";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Button, ThemeProvider, FLAT_THEME } from "@skbkontur/react-ui";
 
-export const SearchValueContext = React.createContext<string>("");
+export const SearchValueContext = React.createContext<object>({});
 
 export default function App() {
-    const [inputValue, setInputValue] = useState("");
-    const [searchValue, setSearchValue] = useState<string>("");
+    const [inputValueName, setInputValueName] = useState("");
+    const [inputValueParameter, setInputValueParameter] = useState("");
+    const [searchValue, setSearchValue] = useState<object>({
+        name: "",
+        parameter: "",
+    });
 
     const searchValueSend = () => {
-        setSearchValue(inputValue);
-        setInputValue("");
+        setSearchValue({
+            name: inputValueName.trim(),
+            parameter: inputValueParameter.trim(),
+        });
+        setInputValueName(inputValueName.trim());
+        setInputValueParameter(inputValueParameter.trim());
+    };
+    const searchAll = () => {
+        setSearchValue({
+            name: "",
+            parameter: "",
+        });
+        setInputValueParameter("");
+        setInputValueName("");
+    };
+    const addProd = () => {
+        setInputValueParameter("");
+        setInputValueName("");
     };
 
     return (
@@ -23,20 +43,39 @@ export default function App() {
                     <div className={styles.App}>
                         <div className={styles.head}></div>
                         <div className={styles.navbar}>
-                            <div className={styles.shop}>Магазин</div>
+                            <div className={styles.shop}>
+                                <Link to="/">
+                                    <button
+                                        className={styles.shop_button}
+                                        onClick={() => searchAll()}
+                                    >
+                                        Магазин
+                                    </button>
+                                </Link>
+                            </div>
+
                             <form
                                 className={styles.search_form}
                                 autoComplete="off"
                             >
                                 <input
-                                    className={styles.input_search}
-                                    placeholder="Искать товары"
+                                    className={styles.input_search_name}
+                                    placeholder="Название"
                                     name="search"
                                     type="text"
                                     autoFocus
-                                    value={inputValue}
+                                    value={inputValueName}
                                     onChange={(e) =>
-                                        setInputValue(e.target.value)
+                                        setInputValueName(e.target.value)
+                                    }
+                                />
+                                <input
+                                    className={styles.input_search_parameters}
+                                    placeholder="Характеристика"
+                                    type="text"
+                                    value={inputValueParameter}
+                                    onChange={(e) =>
+                                        setInputValueParameter(e.target.value)
                                     }
                                 />
                                 <Link to="/">
@@ -50,7 +89,10 @@ export default function App() {
                             </form>
                             <div className={styles.addproduct}>
                                 <Link to="/addproduct">
-                                    <Button use="success">
+                                    <Button
+                                        use="success"
+                                        onClick={() => addProd()}
+                                    >
                                         Добавить товар
                                     </Button>
                                 </Link>

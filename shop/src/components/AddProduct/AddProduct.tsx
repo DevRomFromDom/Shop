@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Input, Select, Textarea } from "@skbkontur/react-ui";
-import { FormGroup } from "../FormGroup";
-import { FormItem } from "../FormItem";
-import { trimDataObject } from "../../Help/Trim";
+import { FormGroup } from "./FormGroup";
+import { FormItem } from "./FormItem";
+import { trimDataObject } from "../../helpers/Trim";
 import { validate } from "./validations";
 import styles from "./AddProduct.module.scss";
 import {
@@ -10,6 +10,7 @@ import {
     ValidationWrapper,
 } from "@skbkontur/react-ui-validations";
 import { Product } from "../../../../server/types";
+import { useMonted } from "./useMounted";
 
 const AddProduct = () => {
     const [addStatus, setAddStatus] = useState("");
@@ -21,11 +22,12 @@ const AddProduct = () => {
     });
     const [name, setName] = useState<string>("");
     const [description, setDescription] = useState<string>("");
-    const [parameters, setParameters] = useState<Product["parameters"]>({
+    const [parameters, setParameters] = useState<any>({
         color: "",
         brand: "",
         condition: "Новый",
     });
+    const isMounted = useMonted();
 
     const validationContainerRef = useRef<ValidationContainer>(null);
 
@@ -57,10 +59,12 @@ const AddProduct = () => {
     useEffect(() => {
         if (addStatus !== "") {
             setTimeout(function clearStatus() {
-                setAddStatus("");
+                if (isMounted) {
+                    setAddStatus("");
+                }
             }, 5000);
         }
-    }, [addStatus]);
+    }, [addStatus, isMounted]);
 
     const setParameter = (
         parameter: keyof Product["parameters"],
@@ -79,7 +83,7 @@ const AddProduct = () => {
         const prName = name.trim();
         const prDescription = description.trim();
         const prParameters = trimDataObject(parameters);
-        console.log(prParameters);
+        await setParameters(prParameters);
 
         setNewProduct({
             _id: "",
@@ -97,7 +101,13 @@ const AddProduct = () => {
                 <div className={styles.submitForm}>
                     <FormGroup title="О товаре">
                         <FormItem title="Название товара">
-                            <Input value={name} onValueChange={setName} />
+                            <ValidationWrapper
+                                validationInfo={validation
+                                    .getNode((x) => x.name)
+                                    .get()}
+                            >
+                                <Input value={name} onValueChange={setName} />
+                            </ValidationWrapper>
                         </FormItem>
                         <FormItem title="Описание товара">
                             <Textarea
@@ -121,20 +131,32 @@ const AddProduct = () => {
                             />
                         </FormItem>
                         <FormItem title="Цвет товара">
-                            <Input
-                                value={parameters.color}
-                                onValueChange={(value) =>
-                                    setParameter("color", value.trim())
-                                }
-                            />
+                            <ValidationWrapper
+                                validationInfo={validation
+                                    .getNode((x) => x.parameters.color)
+                                    .get()}
+                            >
+                                <Input
+                                    value={parameters.color}
+                                    onValueChange={(value) =>
+                                        setParameter("color", value)
+                                    }
+                                />
+                            </ValidationWrapper>
                         </FormItem>
                         <FormItem title="Бренд">
-                            <Input
-                                value={parameters.brand}
-                                onValueChange={(value) =>
-                                    setParameter("brand", value)
-                                }
-                            />
+                            <ValidationWrapper
+                                validationInfo={validation
+                                    .getNode((x) => x.parameters.brand)
+                                    .get()}
+                            >
+                                <Input
+                                    value={parameters.brand}
+                                    onValueChange={(value) =>
+                                        setParameter("brand", value)
+                                    }
+                                />
+                            </ValidationWrapper>
                         </FormItem>
                         <FormItem title="Год изготовления">
                             <ValidationWrapper

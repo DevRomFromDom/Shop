@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./ProductItem.module.scss";
 import { Product } from "../../../../../server/types";
 
-const ProductItem = ({ product }) => {
+export const ProductItem = ({ product }) => {
     useEffect(() => {
         setItem(product);
     }, [product]);
@@ -25,7 +25,11 @@ const ProductItem = ({ product }) => {
             <div className={styles.card}>
                 <div className={styles.main}>
                     <div className={styles.name}>{item.name}</div>
-                    <div className={styles.description}>{item.description}</div>
+                    <div className={styles.description}>
+                        {item.description
+                            ? item.description
+                            : "Описание отсутствует"}
+                    </div>
                 </div>
                 <div className={styles.price}>
                     {item.parameters.price
@@ -63,5 +67,3 @@ const ProductItem = ({ product }) => {
             </div>
         );
 };
-
-export default ProductItem;

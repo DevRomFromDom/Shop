@@ -15,6 +15,7 @@ const server = http.createServer(app);
             useNewUrlParser: true,
             useFindAndModify: false,
             useUnifiedTopology: true,
+            useCreateIndex: true,
         });
         console.log("connected to DB");
     } catch (e) {
@@ -49,40 +50,178 @@ const server = http.createServer(app);
     app.post("/api/search/all", async (req, res) => {
         try {
             const { query, parameters }: SearchRequest = req.body;
-            const reqObject = query ? { name: query } : {};
-            Object.entries(parameters).forEach(([param, values]) => {
-                if (values.length > 0) {
-                    reqObject[`parameters.${param}`] = values;
-                }
-            });
-            const data = await Product.find(reqObject).exec();
-            res.json(data);
+            if (query.name === "" && query.parameter === "") {
+                const reqObj = {};
+                Object.entries(parameters).forEach(([param, values]) => {
+                    if (values.length > 0) {
+                        reqObj[`parameters.${param}`] = values;
+                    }
+                });
+                const data = await Product.find(reqObj).exec();
+                res.json(data);
+            }
+            if (query.name !== "" && query.parameter === "") {
+                const reqObj = {
+                    name: { $regex: `${query.name}`, $options: "i" },
+                };
+                Object.entries(parameters).forEach(([param, values]) => {
+                    if (values.length > 0) {
+                        reqObj[`parameters.${param}`] = values;
+                    }
+                });
+
+                const data = await Product.find(reqObj).exec();
+                res.json(data);
+            }
+            if (query.name === "" && query.parameter !== "") {
+                console.log(query.parameter);
+                const reqObj = {
+                    $where: `function () {
+                        for (let key in this) {
+                            if (typeof this[key] === "object") {
+                                for (let k in this[key]) {
+                                    if ((new RegExp("${query.parameter}", "i")).test(String(this[key][k]))) {
+                                        return true
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    }`,
+                };
+                Object.entries(parameters).forEach(([param, values]) => {
+                    if (values.length > 0) {
+                        reqObj[`parameters.${param}`] = values;
+                    }
+                });
+                const data = await Product.find(reqObj).exec();
+                res.json(data);
+            }
+            if (query.name !== "" && query.parameter !== "") {
+                const reqObj = {
+                    name: { $regex: `${query.name}`, $options: "i" },
+                    $where: `function () {
+                        for (let key in this) {
+                            if (typeof this[key] === "object") {
+                                for (let k in this[key]) {
+                                    if ((new RegExp("${query.parameter}", "i")).test(String(this[key][k]))) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    }`,
+                };
+                Object.entries(parameters).forEach(([param, values]) => {
+                    if (values.length > 0) {
+                        reqObj[`parameters.${param}`] = values;
+                    }
+                });
+                const data = await Product.find(reqObj).exec();
+                res.json(data);
+            }
         } catch (err) {
             console.log(err);
         }
     });
 
-    app.get("/api/parameters", async (req, res) => {
-        const products = await Product.find({});
-        const parameterKeys = Object.keys(products[0].parameters).filter(
-            (key) => key !== "$init"
-        );
-        const distinctValues = parameterKeys.reduce((acc, key) => {
-            const values = Array.from(
-                new Set(products.map((pr) => pr.parameters[key]))
-            );
-            acc[key] = values;
-            return acc;
-        }, {});
-        res.json(distinctValues);
-    });
-    app.post("/api/search/name", async (req, res) => {
-        await Product.find({ name: req.body.name.name }, (err, data) => {
-            if (err) {
-                console.log(err);
-            }
-            res.json(data);
-        });
+    app.post("/api/parameters", async (req, res) => {
+        const name = req.body.name;
+        const param = req.body.parameter;
+        if (name === "" && param === "") {
+            const products = await Product.find({});
+            if (products.length !== 0) {
+                const parameterKeys = Object.keys(
+                    products[0].parameters
+                ).filter((key) => key !== "$init");
+                const distinctValues = parameterKeys.reduce((acc, key) => {
+                    const values = Array.from(
+                        new Set(products.map((pr) => pr.parameters[key]))
+                    );
+                    acc[key] = values;
+                    return acc;
+                }, {});
+                res.json(distinctValues);
+            } else res.json({});
+        }
+        if (name !== "" && param === "") {
+            const products = await Product.find({
+                name: { $regex: `${name}`, $options: "i" },
+            });
+            if (products.length !== 0) {
+                const parameterKeys = Object.keys(
+                    products[0].parameters
+                ).filter((key) => key !== "$init");
+                const distinctValues = parameterKeys.reduce((acc, key) => {
+                    const values = Array.from(
+                        new Set(products.map((pr) => pr.parameters[key]))
+                    );
+                    acc[key] = values;
+                    return acc;
+                }, {});
+                res.json(distinctValues);
+            } else res.json({});
+        }
+        if (name === "" && param !== "") {
+            const products = await Product.find({
+                $where: `function () {
+                        for (let key in this) {
+                            if (typeof this[key] === "object") {
+                                for (let k in this[key]) {
+                                    if ((new RegExp("${param}", "i")).test(String(this[key][k]))) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    }`,
+            });
+            if (products.length !== 0) {
+                const parameterKeys = Object.keys(
+                    products[0].parameters
+                ).filter((key) => key !== "$init");
+                const distinctValues = parameterKeys.reduce((acc, key) => {
+                    const values = Array.from(
+                        new Set(products.map((pr) => pr.parameters[key]))
+                    );
+                    acc[key] = values;
+                    return acc;
+                }, {});
+                res.json(distinctValues);
+            } else res.json({});
+        }
+        if (name !== "" && param !== "") {
+            const products = await Product.find({
+                name: { $regex: `${name}`, $options: "i" },
+                $where: `function () {
+                        for (let key in this) {
+                            if (typeof this[key] === "object") {
+                                for (let k in this[key]) {
+                                    if ((new RegExp("${param}", "i")).test(String(this[key][k]))) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    }`,
+            });
+            if (products.length !== 0) {
+                const parameterKeys = Object.keys(
+                    products[0].parameters
+                ).filter((key) => key !== "$init");
+                const distinctValues = parameterKeys.reduce((acc, key) => {
+                    const values = Array.from(
+                        new Set(products.map((pr) => pr.parameters[key]))
+                    );
+                    acc[key] = values;
+                    return acc;
+                }, {});
+                res.json(distinctValues);
+            } else res.json({});
+        }
     });
 
     app.get("*", (req, res) => {

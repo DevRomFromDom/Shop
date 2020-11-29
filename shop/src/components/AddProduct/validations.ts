@@ -3,6 +3,21 @@ import { Product } from "../../../../server/types";
 
 export const validate = createValidator<Product>((builder) => {
     builder.prop(
+        (product) => product.name,
+        (builder) => {
+            builder.invalid(
+                (name) => !name,
+                "Название товара должно быть указано",
+                "submit"
+            );
+            builder.invalid(
+                (name) => name.trim() === "",
+                "Название товара должно быть указано",
+                "submit"
+            );
+        }
+    );
+    builder.prop(
         (product) => product.parameters.modelYear,
         (builder) => {
             builder.invalid(
@@ -19,6 +34,36 @@ export const validate = createValidator<Product>((builder) => {
                 (modelYear) => String(modelYear).length < 4,
                 "Неправильный год",
                 "lostfocus"
+            );
+        }
+    );
+    builder.prop(
+        (product) => product.parameters.brand,
+        (builder) => {
+            builder.invalid(
+                (brand) => !brand,
+                "Бренд товара должен быть указан",
+                "submit"
+            );
+            builder.invalid(
+                (brand) => brand.trim() === "",
+                "Бренд товара должен быть указан",
+                "submit"
+            );
+        }
+    );
+    builder.prop(
+        (product) => product.parameters.color,
+        (builder) => {
+            builder.invalid(
+                (color) => !color,
+                "Цвет товара должен быть указан",
+                "submit"
+            );
+            builder.invalid(
+                (color) => color.trim() === "",
+                "Цвет товара должен быть указан",
+                "submit"
             );
         }
     );

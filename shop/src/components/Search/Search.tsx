@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import ProductItem from "./ProductItem/ProductItem";
+import { ProductItem } from "./ProductItem";
 import { SearchValueContext } from "../../App";
 import { Checkbox } from "@skbkontur/react-ui";
 import { ParamsAndValues, Product } from "../../../../server/types";
@@ -63,11 +63,15 @@ const Search = () => {
 
     useEffect(() => {
         const all = async () => {
-            const res = await fetch("/api/parameters");
+            const res = await fetch("/api/parameters", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(searchValue),
+            });
             setParamsAndValues(await res.json());
         };
         all();
-    }, []);
+    }, [searchValue]);
 
     if (products === null || paramsAndValues === null) {
         return (

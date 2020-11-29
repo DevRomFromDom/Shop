@@ -1,7 +1,7 @@
 export type Product = {
     _id: any;
     name: string;
-    description: string;
+    description?: string;
     parameters: {
         price?: number;
         color: string;
@@ -16,6 +16,9 @@ export type ParamsAndValues = {
 };
 
 export type SearchRequest = {
-    query: string;
+    query: {
+        name: any;
+        parameter: any;
+    };
     parameters: ParamsAndValues;
 };
